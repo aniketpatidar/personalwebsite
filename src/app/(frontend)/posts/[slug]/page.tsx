@@ -52,8 +52,8 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="pt-16 pb-16">
-      <PageClient />
+    <article className="pt-8 pb-8">
+      <PageClient hasHeroImage={!!post.heroImage && typeof post.heroImage !== 'string'} />
 
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />

@@ -1,9 +1,19 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
+import { IBM_Plex_Mono, Libre_Franklin } from 'next/font/google'
 import React from 'react'
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-ibm-plex-mono',
+})
+
+const libreFranklin = Libre_Franklin({
+  subsets: ['latin'],
+  variable: '--font-libre-franklin',
+})
 
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
@@ -20,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html className={cn(libreFranklin.variable, plexMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -45,6 +55,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  title: {
+    template: '%s | Aniket Patidar',
+    default: 'Aniket Patidar',
+  },
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',

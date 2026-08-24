@@ -72,6 +72,10 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    recommendations: Recommendation;
+    contributions: Contribution;
+    friends: Friend;
+    projects: Project;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +98,10 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    recommendations: RecommendationsSelect<false> | RecommendationsSelect<true>;
+    contributions: ContributionsSelect<false> | ContributionsSelect<true>;
+    friends: FriendsSelect<false> | FriendsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -106,7 +114,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {
@@ -156,7 +164,7 @@ export interface UserAuthOperations {
  * via the `definition` "pages".
  */
 export interface Page {
-  id: string;
+  id: number;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -183,11 +191,11 @@ export interface Page {
             reference?:
               | ({
                   relationTo: 'pages';
-                  value: string | Page;
+                  value: number | Page;
                 } | null)
               | ({
                   relationTo: 'posts';
-                  value: string | Post;
+                  value: number | Post;
                 } | null);
             url?: string | null;
             label: string;
@@ -199,7 +207,7 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
-    media?: (string | null) | Media;
+    media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -207,7 +215,7 @@ export interface Page {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -225,9 +233,9 @@ export interface Page {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  heroImage?: (string | null) | Media;
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -243,18 +251,18 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (string | User)[] | null;
+  authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -275,7 +283,7 @@ export interface Post {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt?: string | null;
   caption?: {
     root: {
@@ -292,7 +300,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -368,18 +376,18 @@ export interface Media {
  * via the `definition` "payload-folders".
  */
 export interface FolderInterface {
-  id: string;
+  id: number;
   name: string;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   documentsAndFolders?: {
     docs?: (
       | {
           relationTo?: 'payload-folders';
-          value: string | FolderInterface;
+          value: number | FolderInterface;
         }
       | {
           relationTo?: 'media';
-          value: string | Media;
+          value: number | Media;
         }
     )[];
     hasNextPage?: boolean;
@@ -394,17 +402,17 @@ export interface FolderInterface {
  * via the `definition` "categories".
  */
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  parent?: (string | null) | Category;
+  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
-        doc?: (string | null) | Category;
+        doc?: (number | null) | Category;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -418,7 +426,7 @@ export interface Category {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   name?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -467,11 +475,11 @@ export interface CallToActionBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -517,11 +525,11 @@ export interface ContentBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -530,6 +538,8 @@ export interface ContentBlock {
            */
           appearance?: ('default' | 'outline') | null;
         };
+        enableMedia?: boolean | null;
+        media?: (number | null) | Media;
         id?: string | null;
       }[]
     | null;
@@ -542,7 +552,7 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: string | Media;
+  media: number | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -568,14 +578,32 @@ export interface ArchiveBlock {
     [k: string]: unknown;
   } | null;
   populateBy?: ('collection' | 'selection') | null;
-  relationTo?: 'posts' | null;
-  categories?: (string | Category)[] | null;
+  relationTo?: ('posts' | 'recommendations' | 'contributions' | 'friends' | 'projects') | null;
+  categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
-    | {
-        relationTo: 'posts';
-        value: string | Post;
-      }[]
+    | (
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+        | {
+            relationTo: 'recommendations';
+            value: number | Recommendation;
+          }
+        | {
+            relationTo: 'contributions';
+            value: number | Contribution;
+          }
+        | {
+            relationTo: 'friends';
+            value: number | Friend;
+          }
+        | {
+            relationTo: 'projects';
+            value: number | Project;
+          }
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
@@ -583,10 +611,110 @@ export interface ArchiveBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recommendations".
+ */
+export interface Recommendation {
+  id: number;
+  name: string;
+  profileUrl?: string | null;
+  headline?: string | null;
+  relationship?: string | null;
+  text: string;
+  image?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contributions".
+ */
+export interface Contribution {
+  id: number;
+  title: string;
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  url?: string | null;
+  date?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "friends".
+ */
+export interface Friend {
+  id: number;
+  name: string;
+  url?: string | null;
+  description?: string | null;
+  image?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image?: (number | null) | Media;
+  githubUrl?: string | null;
+  liveUrl?: string | null;
+  categories?: (number | Category)[] | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
-  form: string | Form;
+  form: number | Form;
   enableIntro?: boolean | null;
   introContent?: {
     root: {
@@ -612,7 +740,7 @@ export interface FormBlock {
  * via the `definition` "forms".
  */
 export interface Form {
-  id: string;
+  id: number;
   title: string;
   fields?:
     | (
@@ -724,9 +852,6 @@ export interface Form {
       )[]
     | null;
   submitButtonLabel?: string | null;
-  /**
-   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
-   */
   confirmationType?: ('message' | 'redirect') | null;
   confirmationMessage?: {
     root: {
@@ -746,9 +871,6 @@ export interface Form {
   redirect?: {
     url: string;
   };
-  /**
-   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
-   */
   emails?:
     | {
         emailTo?: string | null;
@@ -757,9 +879,6 @@ export interface Form {
         replyTo?: string | null;
         emailFrom?: string | null;
         subject: string;
-        /**
-         * Enter the message that should be sent in this email.
-         */
         message?: {
           root: {
             type: string;
@@ -786,7 +905,7 @@ export interface Form {
  * via the `definition` "redirects".
  */
 export interface Redirect {
-  id: string;
+  id: number;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -796,11 +915,11 @@ export interface Redirect {
     reference?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     url?: string | null;
   };
@@ -812,8 +931,8 @@ export interface Redirect {
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
-  id: string;
-  form: string | Form;
+  id: number;
+  form: number | Form;
   submissionData?:
     | {
         field: string;
@@ -831,18 +950,18 @@ export interface FormSubmission {
  * via the `definition` "search".
  */
 export interface Search {
-  id: string;
+  id: number;
   title?: string | null;
   priority?: number | null;
   doc: {
     relationTo: 'posts';
-    value: string | Post;
+    value: number | Post;
   };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
   };
   categories?:
     | {
@@ -860,7 +979,7 @@ export interface Search {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -877,7 +996,7 @@ export interface PayloadKv {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -969,52 +1088,68 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'pages';
-        value: string | Page;
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
-        value: string | Category;
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'recommendations';
+        value: number | Recommendation;
+      } | null)
+    | ({
+        relationTo: 'contributions';
+        value: number | Contribution;
+      } | null)
+    | ({
+        relationTo: 'friends';
+        value: number | Friend;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
       } | null)
     | ({
         relationTo: 'redirects';
-        value: string | Redirect;
+        value: number | Redirect;
       } | null)
     | ({
         relationTo: 'forms';
-        value: string | Form;
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
-        value: string | FormSubmission;
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'search';
-        value: string | Search;
+        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-folders';
-        value: string | FolderInterface;
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -1024,10 +1159,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -1047,7 +1182,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -1149,6 +1284,8 @@ export interface ContentBlockSelect<T extends boolean = true> {
               label?: T;
               appearance?: T;
             };
+        enableMedia?: T;
+        media?: T;
         id?: T;
       };
   id?: T;
@@ -1355,6 +1492,68 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recommendations_select".
+ */
+export interface RecommendationsSelect<T extends boolean = true> {
+  name?: T;
+  profileUrl?: T;
+  headline?: T;
+  relationship?: T;
+  text?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contributions_select".
+ */
+export interface ContributionsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  url?: T;
+  date?: T;
+  image?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "friends_select".
+ */
+export interface FriendsSelect<T extends boolean = true> {
+  name?: T;
+  url?: T;
+  description?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  githubUrl?: T;
+  liveUrl?: T;
+  categories?: T;
+  content?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1636,7 +1835,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "header".
  */
 export interface Header {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1645,11 +1844,11 @@ export interface Header {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1665,7 +1864,7 @@ export interface Header {
  * via the `definition` "footer".
  */
 export interface Footer {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1674,11 +1873,11 @@ export interface Footer {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1756,14 +1955,30 @@ export interface TaskSchedulePublish {
     doc?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'recommendations';
+          value: number | Recommendation;
+        } | null)
+      | ({
+          relationTo: 'contributions';
+          value: number | Contribution;
+        } | null)
+      | ({
+          relationTo: 'friends';
+          value: number | Friend;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: number | Project;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: (number | null) | User;
   };
   output?: unknown;
 }

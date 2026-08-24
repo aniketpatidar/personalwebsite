@@ -61,6 +61,20 @@ const columnFields: Field[] = [
       },
     },
   }),
+  {
+    name: 'enableMedia',
+    type: 'checkbox',
+  },
+  {
+    name: 'media',
+    type: 'upload',
+    relationTo: 'media',
+    admin: {
+      condition: (_data, siblingData) => {
+        return Boolean(siblingData?.enableMedia)
+      },
+    },
+  },
 ]
 
 export const Content: Block = {

@@ -16,7 +16,7 @@ export const ArchiveBlock: React.FC<
 
   const limit = limitFromProps || 3
 
-  let posts: Post[] = []
+  let posts: any[] = []
 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
@@ -26,11 +26,16 @@ export const ArchiveBlock: React.FC<
       else return category
     })
 
-    const fetchedPosts = await payload.find({
-      collection: 'posts',
+    const collectionToQuery = 
+      props.relationTo === 'recommendations' ? 'recommendations' 
+      : props.relationTo === 'contributions' ? 'contributions' 
+      : 'posts'
+
+    const fetchedDocs = await payload.find({
+      collection: collectionToQuery,
       depth: 1,
       limit,
-      ...(flattenedCategories && flattenedCategories.length > 0
+      ...(flattenedCategories && flattenedCategories.length > 0 && collectionToQuery === 'posts'
         ? {
             where: {
               categories: {
@@ -41,14 +46,14 @@ export const ArchiveBlock: React.FC<
         : {}),
     })
 
-    posts = fetchedPosts.docs
+    posts = fetchedDocs.docs
   } else {
     if (selectedDocs?.length) {
-      const filteredSelectedPosts = selectedDocs.map((post) => {
-        if (typeof post.value === 'object') return post.value
-      }) as Post[]
+      const filteredSelectedDocs = selectedDocs.map((doc) => {
+        if (typeof doc.value === 'object') return { ...doc.value, relationTo: doc.relationTo }
+      })
 
-      posts = filteredSelectedPosts
+      posts = filteredSelectedDocs
     }
   }
 
@@ -59,7 +64,7 @@ export const ArchiveBlock: React.FC<
           <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
         </div>
       )}
-      <CollectionArchive posts={posts} />
+      <CollectionArchive posts={posts} relationTo={props.relationTo || undefined} />
     </div>
   )
 }

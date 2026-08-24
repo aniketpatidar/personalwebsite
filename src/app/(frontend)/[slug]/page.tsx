@@ -28,7 +28,7 @@ export async function generateStaticParams() {
 
   const params = pages.docs
     ?.filter((doc) => {
-      return doc.slug !== 'home'
+      return doc.slug !== '/'
     })
     .map(({ slug }) => {
       return { slug }
@@ -45,7 +45,7 @@ type Args = {
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
+  const { slug = '/' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/' + decodedSlug
@@ -56,7 +56,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   })
 
   // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
+  if (!page && slug === '/') {
     page = homeStatic
   }
 
@@ -67,21 +67,29 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { hero, layout } = page
 
   return (
-    <article className="pt-16 pb-24">
+    <article className="pt-8 pb-8">
       <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
+      {hero?.type === 'none' ? (
+        <div className="container mb-16">
+          <div className="prose dark:prose-invert max-w-none">
+            <h1>{page.title}</h1>
+          </div>
+        </div>
+      ) : (
+        <RenderHero {...hero} />
+      )}
       <RenderBlocks blocks={layout} />
     </article>
   )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
+  const { slug = '/' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug({
