@@ -14,27 +14,7 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== '/'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
-
-  return params
+  return []
 }
 
 type Args = {
@@ -44,78 +24,69 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = '/' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const url = '/' + decodedSlug
-  let page: RequiredDataFromCollectionSlug<'pages'> | null
+  try {
+    const { isEnabled: draft } = await draftMode()
+    const { slug = '/' } = await paramsPromise
+    const decodedSlug = decodeURIComponent(slug)
+    const url = '/' + decodedSlug
+    let page: RequiredDataFromCollectionSlug<'pages'> | null
 
-  page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
+    page = await queryPageBySlug({
+      slug: decodedSlug,
+    })
 
-  // Remove this code once your website is seeded
-  if (!page && slug === '/') {
-    page = homeStatic
-  }
+    if (!page && slug === '/') {
+      page = homeStatic
+    }
 
-  if (!page) {
-    return <PayloadRedirects url={url} />
-  }
+    if (!page) {
+      return <PayloadRedirects url={url} />
+    }
 
-  const { hero, layout } = page
+    const { hero, layout } = page
 
-  return (
-    <article className="pt-8 pb-8">
-      <PageClient />
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
-
-      {draft && <LivePreviewListener />}
-
-      {hero?.type === 'none' ? (
-        <div className="container mb-16">
-          <div className="prose dark:prose-invert max-w-none">
-            <h1>{page.title}</h1>
+    return (
+      <article className="pt-8 pb-8">
+        <PageClient />
+        <PayloadRedirects disableNotFound url={url} />
+        {draft && <LivePreviewListener />}
+        {hero?.type === 'none' ? (
+          <div className="container mb-16">
+            <div className="prose dark:prose-invert max-w-none">
+              <h1>{page.title}</h1>
+            </div>
           </div>
-        </div>
-      ) : (
-        <RenderHero {...hero} />
-      )}
-      <RenderBlocks blocks={layout} />
-    </article>
-  )
+        ) : (
+          <RenderHero {...hero} />
+        )}
+        <RenderBlocks blocks={layout} />
+      </article>
+    )
+  } catch (err: any) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h1>Page Error</h1>
+        <pre>{err.message}</pre>
+        <pre>{err.stack}</pre>
+      </div>
+    )
+  }
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = '/' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const page = await queryPageBySlug({
-    slug: decodedSlug,
-  })
-
-  return generateMeta({ doc: page })
+  return { title: 'Personal Websites' }
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
-
   const payload = await getPayload({ config: configPromise })
-
   const result = await payload.find({
     collection: 'pages',
     draft,
     limit: 1,
     pagination: false,
     overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
+    where: { slug: { equals: slug } },
   })
-
   return result.docs?.[0] || null
 })
