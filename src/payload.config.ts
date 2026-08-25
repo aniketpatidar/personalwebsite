@@ -79,7 +79,6 @@ export default buildConfig({
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
-
   logger: isProduction ? cloudflareLogger : undefined,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
