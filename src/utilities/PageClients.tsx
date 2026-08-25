@@ -2,7 +2,7 @@
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect } from 'react'
 
-const PageClient: React.FC = () => {
+export const ListPageClient: React.FC = () => {
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {
@@ -11,4 +11,11 @@ const PageClient: React.FC = () => {
   return <React.Fragment />
 }
 
-export default PageClient
+export const DetailPageClient: React.FC = () => {
+  const { setHeaderTheme } = useHeaderTheme()
+
+  useEffect(() => {
+    setHeaderTheme('light')
+  }, [setHeaderTheme])
+  return <React.Fragment />
+}

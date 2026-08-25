@@ -1,108 +1,29 @@
-import type { Metadata } from 'next'
-
+import { createCollectionDetailPage } from '@/utilities/collectionPages'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
-import { PayloadRedirects } from '@/components/PayloadRedirects'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
 import RichText from '@/components/RichText'
-
-import type { Post } from '@/payload-types'
-
 import { PostHero } from '@/heros/PostHero'
-import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
-}
-
-type Args = {
-  params: Promise<{
-    slug?: string
-  }>
-}
-
-export default async function Post({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const url = '/posts/' + decodedSlug
-  const post = await queryPostBySlug({ slug: decodedSlug })
-
-  if (!post) return <PayloadRedirects url={url} />
-
-  return (
-    <article className="pt-8 pb-8">
-      <PageClient hasHeroImage={!!post.heroImage && typeof post.heroImage !== 'string'} />
-
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
-
-      {draft && <LivePreviewListener />}
-
-      <PostHero post={post} />
-
+const { Page, generateMetadata, generateStaticParams } = createCollectionDetailPage({
+  collection: 'posts',
+  render: ({ doc }) => (
+    <>
+      <PageClient hasHeroImage={!!doc.heroImage && typeof doc.heroImage !== 'string'} />
+      <PostHero post={doc} />
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
+          <RichText className="max-w-[48rem] mx-auto" data={doc.content} enableGutter={false} />
+          {doc.relatedPosts && doc.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+              docs={doc.relatedPosts.filter((post: any) => typeof post === 'object')}
             />
           )}
         </div>
       </div>
-    </article>
-  )
-}
-
-export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const post = await queryPostBySlug({ slug: decodedSlug })
-
-  return generateMeta({ doc: post })
-}
-
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
-
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'posts',
-    draft,
-    limit: 1,
-    overrideAccess: draft,
-    pagination: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return result.docs?.[0] || null
+    </>
+  ),
 })
+
+export { Page as default, generateMetadata, generateStaticParams }
+export const dynamic = 'force-dynamic'
