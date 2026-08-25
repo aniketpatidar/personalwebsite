@@ -2,7 +2,7 @@ import { createCollectionDetailPage } from '@/utilities/collectionPages'
 import RichText from '@/components/RichText'
 import { Media } from '@/components/Media'
 import { DetailPageClient } from '@/utilities/PageClients'
-import { formatDateTime } from 'src/utilities/formatDateTime'
+import { formatDateTime } from '@/utilities/formatDateTime'
 
 const { Page, generateMetadata, generateStaticParams } = createCollectionDetailPage({
   collection: 'contributions',

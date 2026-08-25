@@ -3,7 +3,6 @@ import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
 import React from 'react'
-import { formatDateTime } from 'src/utilities/formatDateTime'
 
 import type { Contribution } from '@/payload-types'
 
