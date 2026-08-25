@@ -71,6 +71,9 @@ importers:
       graphql:
         specifier: ^16.8.2
         version: 16.14.2
+      jose:
+        specifier: ^6.2.10
+        version: 6.2.10
       lucide-react:
         specifier: 0.563.0
         version: 0.563.0(react@19.2.6)
@@ -4758,6 +4761,9 @@ packages:
 
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
+  jose@6.2.10:
+    resolution: {integrity: sha512-iiW7J9qRFlGxvCOIBDBDxFePQSn7ZMAnrYGhrrOo6siO/MIqwfyilLR27pkfDgUk+raLuzADS8A3S/KLBisc0g==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -11338,6 +11344,8 @@ snapshots:
   jiti@2.7.0: {}
 
   jose@5.10.0: {}
+
+  jose@6.2.10: {}
 
   joycon@3.1.1: {}
 
