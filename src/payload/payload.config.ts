@@ -17,11 +17,11 @@ import { Recommendations } from './collections/Recommendations'
 import { Contributions } from './collections/Contributions'
 import { Projects } from './collections/Projects'
 import { Friends } from './collections/Friends'
-import { Footer } from './Footer/config'
-import { Header } from './Header/config'
+import { Footer } from '../Footer/config'
+import { Header } from '../Header/config'
 import { plugins } from './plugins'
-import { defaultLexical } from '@/fields/defaultLexical'
-import { getServerSideURL } from './utilities/getURL'
+import { defaultLexical } from '@/payload/fields/defaultLexical'
+import { getServerSideURL } from '../utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
