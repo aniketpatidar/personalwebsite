@@ -7,6 +7,7 @@ import { Pagination } from '@/components/Pagination'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
@@ -244,8 +245,7 @@ export function createCollectionDetailPage<TSlug extends CollectionSlug>(
     return generateMeta({ doc })
   }
 
-  const queryBySlug = cache(async ({ slug }: { slug: string }) => {
-    const { isEnabled: draft } = await draftMode()
+  async function getDocument(slug: string, draft: boolean) {
     const payload = await getPayload({ config: configPromise })
 
     const result = await payload.find({
@@ -262,6 +262,23 @@ export function createCollectionDetailPage<TSlug extends CollectionSlug>(
     })
 
     return result.docs?.[0] || null
+  }
+
+  const getCachedDocument = (slug: string) =>
+    unstable_cache(
+      async () => getDocument(slug, false),
+      [collection as string, slug],
+      { tags: [`${collection as string}_${slug}`, collection as string] }
+    )
+
+  const queryBySlug = cache(async ({ slug }: { slug: string }) => {
+    const { isEnabled: draft } = await draftMode()
+
+    if (draft) {
+      return getDocument(slug, true)
+    }
+
+    return getCachedDocument(slug)()
   })
 
   return { Page, generateMetadata, generateStaticParams }
