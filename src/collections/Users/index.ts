@@ -30,7 +30,14 @@ export const Users: CollectionConfig = {
             }
           }
           
-          if (!token) console.error('Auth Strategy Error:', error); return { user: null };
+          const clearCookieHeaders = new Headers({
+            'Set-Cookie': 'payload-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax'
+          });
+
+          if (!token) {
+            console.error('Auth Strategy Error: No token provided');
+            return { user: null };
+          }
 
           try {
             const secretStr = process.env.JWT_SECRET || 'dev-secret-change-me';
@@ -43,7 +50,10 @@ export const Users: CollectionConfig = {
             });
             
             const email = jwtPayload.email as string;
-            if (!email) console.error('Auth Strategy Error:', error); return { user: null };
+            if (!email) {
+              console.error('Auth Strategy Error: No email in JWT payload');
+              return { user: null, responseHeaders: clearCookieHeaders };
+            }
 
             let user;
             const { docs } = await payload.find({
@@ -51,22 +61,22 @@ export const Users: CollectionConfig = {
               where: { email: { equals: email } },
             });
 
-            if (docs.length > 0) {
-              user = docs[0];
-            } else {
-              user = await payload.create({
-                collection: 'users',
-                data: {
-                  email,
-                  name: email.split('@')[0],
-                  password: crypto.randomUUID(), 
-                },
-              });
+            if (docs.length === 0) {
+              console.error('Auth Strategy Error: User not found. User must be pre-registered.');
+              return { user: null, responseHeaders: clearCookieHeaders };
             }
 
-            return { user };
+            user = docs[0];
+
+            return { 
+              user: {
+                ...user,
+                collection: 'users'
+              } 
+            };
           } catch (error) {
-            console.error('Auth Strategy Error:', error); return { user: null };
+            console.error('Auth Strategy Error:', error);
+            return { user: null, responseHeaders: clearCookieHeaders };
           }
         },
       }
