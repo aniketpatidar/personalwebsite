@@ -50,13 +50,10 @@ const cloudflareLogger = {
   silent: () => {},
 } as any
 
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.CF_PAGES === '1';
-
-const cloudflare = isBuildPhase
-  ? { env: { D1: {} as any, R2: {} as any } }
-  : (isCLI || !isProduction
+const cloudflare =
+  isCLI || !isProduction
     ? await getCloudflareContextFromWrangler()
-    : await getCloudflareContext({ async: true }));
+    : await getCloudflareContext({ async: true })
 
 export default buildConfig({
   admin: {
