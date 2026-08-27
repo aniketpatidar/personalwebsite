@@ -16,25 +16,31 @@ export async function GET(req: Request, { params }: { params: Promise<{ filename
       return new NextResponse('Not found', { status: 404 });
     }
 
-    const headers = new Headers();
-    obj.writeHttpMetadata(headers);
+    const buffer = await obj.arrayBuffer();
+
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const types: Record<string, string> = {
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'webp': 'image/webp',
+      'gif': 'image/gif',
+      'svg': 'image/svg+xml'
+    };
     
-    if (!headers.has('Content-Type')) {
-      const ext = filename.split('.').pop()?.toLowerCase();
-      const types: Record<string, string> = {
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'webp': 'image/webp',
-        'gif': 'image/gif',
-        'svg': 'image/svg+xml'
-      };
-      if (ext && types[ext]) {
-        headers.set('Content-Type', types[ext]);
-      }
+    let contentType = 'application/octet-stream';
+    if (ext && types[ext]) {
+      contentType = types[ext];
+    } else if (obj.httpMetadata && obj.httpMetadata.contentType) {
+      contentType = obj.httpMetadata.contentType;
     }
 
-    return new NextResponse(obj.body as any, {
+    const headers = new Headers({
+      'Content-Type': contentType,
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    });
+
+    return new NextResponse(buffer, {
       headers,
     });
   } catch (err) {
