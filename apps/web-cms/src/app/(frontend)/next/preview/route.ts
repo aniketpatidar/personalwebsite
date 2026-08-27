@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import type { PayloadRequest } from 'payload'
 import { getPayload } from 'payload'
 

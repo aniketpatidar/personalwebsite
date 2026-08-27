@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { createLocalReq, getPayload } from 'payload'
 import { seed } from '@/payload/endpoints/seed'
 import config from '@payload-config'

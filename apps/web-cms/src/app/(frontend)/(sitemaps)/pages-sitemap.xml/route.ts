@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
