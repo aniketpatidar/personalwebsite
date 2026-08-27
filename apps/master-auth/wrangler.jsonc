@@ -1,0 +1,28 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "auth",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-08-25",
+	"observability": {
+		"enabled": true
+	},
+	"send_email": [
+		{
+			"name": "EMAIL"
+		}
+	],
+	"vars": {
+		"ALLOWED_SITES": "claireboston.net,cms.aniketpatidar.com,localhost:3000",
+		"FROM_ADDRESS": "no-reply@aniketpatidar.com"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "MAGIC_LINKS_KV",
+			"id": "5aa9a0fab3284629ba8c032a55e55f69"
+		}
+	]
+}

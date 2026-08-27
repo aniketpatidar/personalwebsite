@@ -62,7 +62,7 @@ export const Users: CollectionConfig = {
             });
 
             if (docs.length === 0) {
-              console.error('Auth Strategy Error: User not found. User must be pre-registered.');
+              console.warn('Auth Strategy Warning: Unauthenticated or unregistered user access attempt.');
               return { user: null, responseHeaders: clearCookieHeaders };
             }
 
