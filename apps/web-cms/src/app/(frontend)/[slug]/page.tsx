@@ -77,8 +77,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return { title: 'Personal Websites' }
 }
 
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
+import { unstable_cache } from 'next/cache'
+
+async function getDocument(slug: string, draft: boolean) {
   const payload = await getPayload({ config: configPromise })
   const result = await payload.find({
     collection: 'pages',
@@ -89,4 +90,19 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     where: { slug: { equals: slug } },
   })
   return result.docs?.[0] || null
+}
+
+const getCachedDocument = (slug: string) =>
+  unstable_cache(
+    async () => getDocument(slug, false),
+    ['pages', slug],
+    { tags: [`pages_${slug}`, 'pages'] }
+  )
+
+const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) {
+    return getDocument(slug, true)
+  }
+  return getCachedDocument(slug)()
 })
