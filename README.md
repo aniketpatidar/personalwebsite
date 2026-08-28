@@ -107,6 +107,7 @@ apps/
 ```
 
 Inside `apps/web-cms/src`, frontend routes live under `app`, Payload collections and plugins under `payload`, reusable page blocks under `blocks`, and shared site chrome under `Header` and `Footer`. The authentication flow is documented in [`apps/web-cms/docs/auth-architecture.md`](apps/web-cms/docs/auth-architecture.md).
+<img width="1450" height="678" alt="Screenshot from 2026-08-28 13-31-46" src="https://github.com/user-attachments/assets/9977294d-4bc4-4d03-a64a-5a5117fcd26c" />
 
 ## Testing
 
