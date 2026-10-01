@@ -1,0 +1,35 @@
+{
+  "name": "payload-plugin-worker-auth",
+  "version": "0.1.0",
+  "description": "Payload auth strategy plugin for verifying JWT sessions issued by a shared Cloudflare Worker (magic-link / passwordless admin login)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm clean && pnpm build"
+  },
+  "dependencies": {
+    "jose": "^6.2.10"
+  },
+  "peerDependencies": {
+    "payload": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "payload": "3.88.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.7.3"
+  }
+}
