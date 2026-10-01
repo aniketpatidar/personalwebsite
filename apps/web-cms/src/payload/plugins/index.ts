@@ -3,6 +3,7 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
+import { workerAuthPlugin } from 'payload-plugin-worker-auth'
 import { Plugin } from 'payload'
 import { revalidateRedirects } from '@/payload/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
@@ -24,6 +25,12 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 }
 
 export const plugins: Plugin[] = [
+  workerAuthPlugin({
+    collection: 'users',
+    // Preserves the previous hardcoded fallback used when a request has
+    // neither an x-forwarded-host nor a host header.
+    fallbackAudience: 'claireboston.net',
+  }),
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
