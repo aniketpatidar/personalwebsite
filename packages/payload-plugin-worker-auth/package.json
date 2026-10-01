@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "prepublishOnly": "pnpm clean && pnpm build"
+    "prepublishOnly": "pnpm clean && pnpm test run && pnpm build",
+    "test": "vitest"
   },
   "dependencies": {
     "jose": "^6.2.10"
@@ -30,6 +31,7 @@
     "@types/node": "^22.0.0",
     "payload": "3.88.0",
     "rimraf": "^5.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.18"
   }
 }

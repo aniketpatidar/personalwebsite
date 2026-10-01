@@ -44,11 +44,14 @@ export default buildConfig({
 ```
 
 The target collection must already exist in `collections` (this plugin
-attaches a strategy to it, it doesn't create the collection). Payload's
-built-in email/password strategy stays enabled alongside this one unless
-the collection already sets `disableLocalStrategy: true` — so an admin
-can still be hand-created with a password if needed, e.g. for local dev
-without running the auth Worker.
+attaches a strategy to it, it doesn't create the collection). If `collection`
+doesn't match any collection slug, the plugin logs a `console.warn` at
+config-build time and otherwise no-ops, rather than silently doing nothing —
+a typo'd slug fails loudly instead of quietly leaving the collection
+unauthenticated. Payload's built-in email/password strategy stays enabled
+alongside this one unless the collection already sets
+`disableLocalStrategy: true` — so an admin can still be hand-created with a
+password if needed, e.g. for local dev without running the auth Worker.
 
 ## How authentication resolves
 
@@ -81,3 +84,17 @@ without running the auth Worker.
 | `cookieName`         | `'payload-token'`   | Cookie the session JWT is read from / cleared on failure        |
 | `lookupField`        | `'email'`           | Field matched against the JWT's `email` claim                  |
 | `fallbackAudience`   | `undefined`         | Audience to use when no host header is present                 |
+
+## Tests
+
+```bash
+pnpm test
+```
+
+Covers the config-merge logic (attaches only to the matching collection,
+preserves existing `auth` config and strategies, warns on a missing
+collection) and `authenticate()` itself against real signed JWTs via
+`jose` — including a regression test for cookie names containing regex
+metacharacters, audience-mismatch rejection, and the unregistered-user
+path. No mocked JWT verification; the tokens are actually signed and
+actually verified.

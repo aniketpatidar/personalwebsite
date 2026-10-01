@@ -21,6 +21,10 @@ const clearCookieHeaders = (cookieName: string) =>
     'Set-Cookie': `${cookieName}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax`,
   })
 
+// Cookie names are user-configurable; escape before building a RegExp so a
+// name containing characters like `.` or `+` can't change what the pattern matches.
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 const createWorkerAuthStrategy = (options: ResolvedOptions): AuthStrategy => ({
   name: options.strategyName,
   authenticate: async ({ headers, payload }) => {
@@ -29,7 +33,9 @@ const createWorkerAuthStrategy = (options: ResolvedOptions): AuthStrategy => ({
     if (!token) {
       const cookieStr = headers.get('cookie')
       if (cookieStr) {
-        const match = cookieStr.match(new RegExp(`(?:^|;\\s*)${options.cookieName}=([^;]*)`))
+        const match = cookieStr.match(
+          new RegExp(`(?:^|;\\s*)${escapeRegExp(options.cookieName)}=([^;]*)`),
+        )
         token = match ? match[1] : undefined
       }
     }
@@ -103,8 +109,11 @@ export const workerAuthPlugin =
 
     const strategy = createWorkerAuthStrategy(resolved)
 
+    let matched = false
+
     const collections = config.collections?.map((collection) => {
       if (collection.slug !== resolved.collection) return collection
+      matched = true
 
       const existingAuth = collection.auth && typeof collection.auth === 'object' ? collection.auth : {}
       const existingStrategies =
@@ -118,6 +127,15 @@ export const workerAuthPlugin =
         },
       }
     })
+
+    if (!matched) {
+      // This runs at config-build time, before a Payload instance (and its
+      // logger) exists, so there's no payload.logger to use here yet.
+      console.warn(
+        `[payload-plugin-worker-auth] no collection with slug "${resolved.collection}" was found. ` +
+          'The worker-auth strategy was not attached to anything — check the `collection` option.',
+      )
+    }
 
     return {
       ...config,
